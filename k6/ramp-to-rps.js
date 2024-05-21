@@ -4,14 +4,21 @@ import { URL } from "https://jslib.k6.io/url/1.0.0/index.js";
 import { randomString } from "https://jslib.k6.io/k6-utils/1.2.0/index.js";
 
 export const options = {
+  // noConnectionReuse: true, // disable keep-alive connections
   scenarios: {
     contacts: {
       executor: "ramping-arrival-rate",
-      startRate: 50,
+      startRate: 2,
       timeUnit: "1s",
       preAllocatedVUs: 600,
       stages: [
-        { target: 50, duration: "1m" },
+        { target: 2, duration: "30s" },
+        { target: 10, duration: "5s" },
+        { target: 10, duration: "30s" },
+        { target: 20, duration: "5s" },
+        { target: 20, duration: "30s" },
+        { target: 50, duration: "5s" },
+        { target: 50, duration: "30s" },
         { target: 100, duration: "10s" },
         { target: 100, duration: "1m" },
         { target: 150, duration: "10s" },
