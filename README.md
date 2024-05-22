@@ -13,6 +13,10 @@ Understand the performance and reliability boundaries of fleek functions through
 
 ### Run load test
 
+- If running the TCP tests, then you need to build a `k6` binary with the TCP protocol extension
+  ```sh
+  xk6 build master --with github.com/snormore/xk6-tcp
+  ```
 - Run [k6](https://k6.io/) load test and save HTML report to file:
   ```sh
   REPORT_PATH="reports/ramp-to-150rps-$(date +"%Y-%m-%d_%H-%M-%S").html"
