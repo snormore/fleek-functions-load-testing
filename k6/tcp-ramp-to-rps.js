@@ -86,20 +86,31 @@ export default function () {
 }
 
 function sendHandshake(conn, serviceId) {
-  const buf = new Uint8Array(149);
-  // TODO: convert service id to uint8array of size 4 and inject here instead of just setting least significant byte
-  buf[4] = serviceId; // service id is u32 from 1..=4
-  tcp.write(conn, new Uint8Array([0, 0, 0, buf.length])); // TODO: convert length to uint8array of size 4
-  tcp.write(conn, buf);
+  const payloadBytes = new Uint8Array(149);
+  payloadBytes.set(uint32ToUint8Array(serviceId), 1);
+  const lengthBytes = uint32ToUint8Array(payloadBytes.length);
+  tcp.write(conn, lengthBytes);
+  tcp.write(conn, payloadBytes);
 }
 
 function sendRequest(conn, request) {
-  const buf = new Uint8Array([
+  const payloadBytes = new Uint8Array([
     0,
     ...new TextEncoder().encode(JSON.stringify(request)),
   ]);
-  tcp.write(conn, new Uint8Array([0, 0, 0, buf.length])); // TODO: convert length to uint8array of size 4
-  tcp.write(conn, buf);
+  const lengthBytes = uint32ToUint8Array(payloadBytes.length);
+  tcp.write(conn, lengthBytes);
+  tcp.write(conn, payloadBytes);
+}
+
+// Convert a uint32 to a big-endian Uint8Array.
+function uint32ToUint8Array(value) {
+  return new Uint8Array([
+    (value >> 24) & 0xff,
+    (value >> 16) & 0xff,
+    (value >> 8) & 0xff,
+    value & 0xff,
+  ]);
 }
 
 function bytesToInt(bytes) {
